@@ -95,7 +95,7 @@ public class test {
     public static  void testSignBindAddress(){
         String privateKey = "f78494eb224f875d7e352a2b017304e11e6a3ce94af57b373ae82a73b3496cdd";
         BindAddress   bind = new BindAddress();
-        bind.setMerchant_address("0xDC87b44A19d7C69b56cCed2e3C7c9819263611bd");
+        bind.setMerchant_address("0x2143d11B31b319C008F59c2D967eBF0E5ad2791d");
         bind.setUser_id("3333333333");
         bind.setNotify("https://test-notify.vercel.app/api/index");
         bind.setChain_name("tron");
