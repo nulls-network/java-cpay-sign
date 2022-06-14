@@ -198,16 +198,8 @@ public class test {
         buffer.put(notify);
         buffer.put(chain_name);
 
-        byte[]  sign_message;
-        try {
-            sign_message= Hash.sha3(buffer.array());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        String sign_message_hex = Numeric.toHexString(sign_message);
-        System.out.println(sign_message_hex);
         ECKeyPair ecKeyPair = ECKeyPair.create(new BigInteger(privateKey, 16));
-        Sign.SignatureData signature = Sign.signMessage(sign_message, ecKeyPair,false);
+        Sign.SignatureData signature = Sign.signMessage(buffer.array(), ecKeyPair);
         System.out.println(signature.getR().length +"   "+signature.getS().length +"  "+signature.getV().length);
         byte[] sig_data = ByteBuffer.allocate(signature.getR().length + signature.getS().length + signature.getV().length)
                 .put(signature.getR())
