@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,9 @@ public class test {
     public static void main(String[] args) {
 //        testRecover();
 
-        testOrder();
+//        testOrder();
+
+        testSignBindAddress();
     }
 
 
@@ -80,6 +83,28 @@ public class test {
         } catch (SignatureException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+//    { merchant_address: '0xDC87b44A19d7C69b56cCed2e3C7c9819263611bd',
+//    user_id: '3333333333',
+//    notify: 'https://test-notify.vercel.app/api/index',
+//    signature: '0x42a06002b076686a46c61f315d95ae7426dbb7804d35af83e1568b7523180bdf5d7490ac3d3899dda0c11e343dc39198ee06af443218f7fa86f4741b6218ff381b',
+//    chain_name: 'tron'
+//    }
+    public static  void testSignBindAddress(){
+        String privateKey = "f78494eb224f875d7e352a2b017304e11e6a3ce94af57b373ae82a73b3496cdd";
+        BindAddress   bind = new BindAddress();
+        bind.setMerchant_address("0xDC87b44A19d7C69b56cCed2e3C7c9819263611bd");
+        bind.setUser_id("3333333333");
+        bind.setNotify("https://test-notify.vercel.app/api/index");
+        bind.setChain_name("tron");
+        String sign = signBindAddress(bind,privateKey);
+
+        bind.setSignature(sign);
+
+        System.out.println(sign);
+
     }
 
 
@@ -157,5 +182,39 @@ public class test {
         BigInteger publicKey = Sign.signedMessageHashToKey(sign_message,signature);
         String sign_address = Keys.getAddress(publicKey);
         return "0x"+sign_address;
+    }
+
+
+
+    public static String  signBindAddress(BindAddress bindAddress,String privateKey) {
+        byte[] merchant_address = bindAddress.getMerchant_address().getBytes();
+        byte[] user_id = bindAddress.getUser_id().getBytes();
+        byte[] notify = bindAddress.getNotify().getBytes();
+        byte[] chain_name = bindAddress.getChain_name().getBytes();
+        int length = merchant_address.length + user_id.length + chain_name.length+notify.length;
+        ByteBuffer buffer = ByteBuffer.allocate(length);
+        buffer.put(merchant_address);
+        buffer.put(user_id);
+        buffer.put(notify);
+        buffer.put(chain_name);
+
+        byte[]  sign_message;
+        try {
+            sign_message= Hash.sha3(buffer.array());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String sign_message_hex = Numeric.toHexString(sign_message);
+        System.out.println(sign_message_hex);
+        ECKeyPair ecKeyPair = ECKeyPair.create(new BigInteger(privateKey, 16));
+        Sign.SignatureData signature = Sign.signMessage(sign_message, ecKeyPair,false);
+        System.out.println(signature.getR().length +"   "+signature.getS().length +"  "+signature.getV().length);
+        byte[] sig_data = ByteBuffer.allocate(signature.getR().length + signature.getS().length + signature.getV().length)
+                .put(signature.getR())
+                .put(signature.getS())
+                .put(signature.getV())
+                .array();
+        String hexSig = Numeric.toHexString(sig_data);
+        return hexSig;
     }
 }
