@@ -1,3 +1,9 @@
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * desc: TODO
  *
@@ -56,5 +62,21 @@ public class BindAddress {
 
     public void setChain_name(String chain_name) {
         this.chain_name = chain_name;
+    }
+
+    public byte[] getBytes() throws IOException {
+        List<byte[]> list = new ArrayList<>();
+
+        list.add(this.getMerchant_address().getBytes());
+        list.add(this.getUser_id().getBytes());
+        list.add(this.getNotify().getBytes());
+        list.add(this.getChain_name().getBytes());
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        for(byte[] bs : list) {
+            byteArrayOutputStream.write(bs);
+        }
+
+        return byteArrayOutputStream.toByteArray();
     }
 }

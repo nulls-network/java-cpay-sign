@@ -1,3 +1,8 @@
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class NotifyMessage {
 
     private String out_order_no;
@@ -116,5 +121,29 @@ public class NotifyMessage {
 
     public void setSign(String sign) {
         this.sign = sign;
+    }
+
+    public byte[] getBytes() throws IOException {
+        List<byte[]> list = new ArrayList<>();
+        list.add(this.getOut_order_no().getBytes());
+        list.add(this.getUuid().getBytes());
+        list.add(this.getMerchant_address().getBytes());
+        list.add(this.getType().getBytes());
+        list.add(this.getAmount().getBytes());
+        list.add(this.getAmount_hex().getBytes());
+        list.add(this.getGot_amount().getBytes());
+        list.add(this.getPay_result().getBytes());
+        list.add(this.getToken().getBytes());
+        if ("recharge".equals(this.getType())) {
+            list.add(this.getBind_uuid().getBytes());
+            list.add(this.getUser_id().getBytes());
+        }
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        for(byte[] bs : list) {
+            byteArrayOutputStream.write(bs);
+        }
+
+        return byteArrayOutputStream.toByteArray();
     }
 }

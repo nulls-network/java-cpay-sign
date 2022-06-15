@@ -1,3 +1,9 @@
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Order {
     private String  out_order_no;
     private String pay_chain;
@@ -70,6 +76,23 @@ public class Order {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public byte[] getBytes() throws IOException {
+        List<byte[]> list = new ArrayList<>();
+
+        list.add(this.getOut_order_no().getBytes());
+        list.add(this.getPay_chain().getBytes());
+        list.add(this.getPay_token().getBytes());
+        list.add(this.getPay_amount().getBytes());
+        list.add(this.getNotify().getBytes());
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        for(byte[] bs : list) {
+            byteArrayOutputStream.write(bs);
+        }
+
+        return byteArrayOutputStream.toByteArray();
     }
 }
 
