@@ -19,7 +19,8 @@ public class Test {
 
     private static  void testOrder(String version) {
         Order order = new Order();
-        order.setOut_order_no(UUID.randomUUID().toString());
+        // The maximum length of orderNo is 32 bytes
+        order.setOut_order_no(UUID.randomUUID().toString().substring(0,32));
         order.setNotify("http://localhost");
         order.setPay_amount("0.01");
         order.setPay_chain("tron");
