@@ -60,4 +60,9 @@ public class SignUtils {
         String signAddress = Keys.getAddress(publicKey);
         return "0x" + signAddress;
     }
+
+    public static String getPublicKey(String privateKey) {
+        ECKeyPair ecKeyPair = ECKeyPair.create(new BigInteger(privateKey, 16));
+        return "0x" + Keys.getAddress(ecKeyPair.getPublicKey());
+    }
 }
